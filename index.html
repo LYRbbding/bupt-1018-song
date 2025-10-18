@@ -53,29 +53,90 @@
             opacity: 0;
             transition: opacity 2s ease;
         }
+
+        /* 强化浮动按钮光效 */
+        #floatingButton {
+            /* 更明亮的按钮底色（径向高光） */
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.9) 55%, rgba(255,220,150,0.85) 100%) !important;
+            /* 脉冲发光动画 */
+            animation: pulseGlow 2.4s ease-in-out infinite;
+        }
+        #floatingButton::after {
+            content: "";
+            position: absolute;
+            top: -18px;
+            left: -18px;
+            right: -18px;
+            bottom: -18px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            /* 外圈柔和光晕 */
+            background: radial-gradient(circle, rgba(255,200,0,0.35) 0%, rgba(255,200,0,0.25) 35%, rgba(255,200,0,0.05) 70%, rgba(255,200,0,0) 100%);
+            filter: blur(8px);
+            animation: halo 2.4s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.2),
+                0 0 12px 2px rgba(255,180,0,0.55),
+                0 0 28px 10px rgba(255,230,150,0.45);
+            }
+            50% {
+            box-shadow:
+                0 6px 18px rgba(0,0,0,0.25),
+                0 0 22px 8px rgba(255,170,0,0.9),
+                0 0 60px 20px rgba(255,240,180,0.8);
+            }
+        }
+        @keyframes halo {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.08); }
+        }
+        #floatingButton {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 1200;
+        }
     </style>
 </head>
 <body>
     <div id="overlayImage" style="overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;">
-        <img src="home.png" alt="Overlay Image" style="width:100%; height:auto; display:block; max-width:none;">
+        <img src="https://cdn.jsdelivr.net/gh/lyrbbding/bupt-1018-song@master/home.jpg" alt="Overlay Image" style="width:100%; height:auto; display:block; max-width:none;">
     </div>
     
     <div class="container">
-        <img src="https://cdn.jsdelivr.net/gh/lyrbbding/bupt-1018-song@master/program.png" alt="Full Screen Image">
+        <img src="https://cdn.jsdelivr.net/gh/lyrbbding/bupt-1018-song@master/program.jpg" alt="Full Screen Image">
         <button id="muteButton">🔊 播放</button>
         <audio id="bgMusic" autoplay loop>
-            <!-- <source src="https://cdn.jsdelivr.net/gh/lyrbbding/bupt-1018-song@master/song.flac" type="audio/flac"> -->
             <source src="https://cdn.jsdelivr.net/gh/lyrbbding/bupt-1018-song@master/song.mp3" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
     </div>
 
+    <button id="floatingButton">点击<br>进入</button>
+
     <script>
         const audio = document.getElementById('bgMusic');
         const muteButton = document.getElementById('muteButton');
         const overlayImage = document.getElementById('overlayImage');
+        const floatingButton = document.getElementById('floatingButton');
         
-        // Start muted due to browser autoplay policies
         audio.muted = true;
         
         muteButton.addEventListener('click', function() {
@@ -88,7 +149,6 @@
             }
         });
         
-        // Try to play audio on page load
         window.addEventListener('load', () => {
             audio.play().catch(error => {
                 console.log("Autoplay issue:", error);
@@ -102,10 +162,27 @@
             audio.play().catch(error => {
                 console.log("Play error:", error);
             });
-            overlayImage.classList.add('fade-out'); // Add fade-out class
+            overlayImage.classList.add('fade-out');
+            floatingButton.classList.add('fade-out');
             setTimeout(() => {
-                overlayImage.style.display = 'none'; // Hide after fade-out
-            }, 2000); // Match the duration of the fade-out
+                overlayImage.style.display = 'none';
+                floatingButton.style.display = 'none';
+            }, 2000);
+        });
+        floatingButton.addEventListener('click', function() {
+            if (audio.muted) {
+                audio.muted = false;
+                muteButton.textContent = '🔇 静音';
+            }
+            audio.play().catch(error => {
+                console.log("Play error:", error);
+            });
+            overlayImage.classList.add('fade-out');
+            floatingButton.classList.add('fade-out');
+            setTimeout(() => {
+                overlayImage.style.display = 'none';
+                floatingButton.style.display = 'none';
+            }, 2000);
         });
         const container = document.querySelector('.container');
 
