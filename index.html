@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>“歌声飘过70年”校园歌会节目单</title>
+    <title>"歌声飘过70年"校园歌会节目单</title>
     <link rel="icon" href="https://cdn.jsdelivr.net/gh/lyrbbding/bupt-1018-song@master/logo.png" type="image/png">
 
     <style>
@@ -38,9 +38,28 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        #overlayImage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            cursor: pointer;
+            object-fit: cover;
+            object-position: top;
+        }
+        .fade-out {
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
     </style>
 </head>
 <body>
+    <div id="overlayImage" style="overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;">
+        <img src="home.png" alt="Overlay Image" style="width:100%; height:auto; display:block; max-width:none;">
+    </div>
+    
     <div class="container">
         <img src="https://cdn.jsdelivr.net/gh/lyrbbding/bupt-1018-song@master/program.png" alt="Full Screen Image">
         <button id="muteButton">🔊 播放</button>
@@ -54,6 +73,7 @@
     <script>
         const audio = document.getElementById('bgMusic');
         const muteButton = document.getElementById('muteButton');
+        const overlayImage = document.getElementById('overlayImage');
         
         // Start muted due to browser autoplay policies
         audio.muted = true;
@@ -74,9 +94,7 @@
                 console.log("Autoplay issue:", error);
             });
         });
-        // Add click event listener to the image to play music
-        const image = document.querySelector('img');
-        image.addEventListener('click', function() {
+        overlayImage.addEventListener('click', function() {
             if (audio.muted) {
                 audio.muted = false;
                 muteButton.textContent = '🔇 静音';
@@ -84,6 +102,10 @@
             audio.play().catch(error => {
                 console.log("Play error:", error);
             });
+            overlayImage.classList.add('fade-out'); // Add fade-out class
+            setTimeout(() => {
+                overlayImage.style.display = 'none'; // Hide after fade-out
+            }, 2000); // Match the duration of the fade-out
         });
         const container = document.querySelector('.container');
 
