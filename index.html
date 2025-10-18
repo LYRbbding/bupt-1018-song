@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>“歌声飘过70年”校园歌会节目单</title>
+    <link rel="icon" href="logo.png" type="image/png">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-y: hidden;
+            overflow-x: auto;
+        }
+        .container {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            justify-content: flex-start;
+        }
+        img {
+            height: 100vh;
+            max-width: none;
+            display: block;
+            object-fit: contain;
+        }
+        #muteButton {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="program.png" alt="Full Screen Image">
+        <button id="muteButton">🔊 播放</button>
+        <audio id="bgMusic" autoplay loop>
+            <source src="song.flac" type="audio/flac">
+            <source src="song.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <script>
+        const audio = document.getElementById('bgMusic');
+        const muteButton = document.getElementById('muteButton');
+        
+        // Start muted due to browser autoplay policies
+        audio.muted = true;
+        
+        muteButton.addEventListener('click', function() {
+            if (audio.muted) {
+                audio.muted = false;
+                muteButton.textContent = '🔇 静音';
+            } else {
+                audio.muted = true;
+                muteButton.textContent = '🔊 播放';
+            }
+        });
+        
+        // Try to play audio on page load
+        window.addEventListener('load', () => {
+            audio.play().catch(error => {
+                console.log("Autoplay issue:", error);
+            });
+        });
+        // Add click event listener to the image to play music
+        const image = document.querySelector('img');
+        image.addEventListener('click', function() {
+            if (audio.muted) {
+                audio.muted = false;
+                muteButton.textContent = '🔇 静音';
+            }
+            audio.play().catch(error => {
+                console.log("Play error:", error);
+            });
+        });
+        const container = document.querySelector('.container');
+
+        function updateJustify() {
+            if (!container) return;
+            const h = window.innerHeight;
+            const w = window.innerWidth;
+            if (h === 0) return;
+            container.style.setProperty('justify-content', (w / h > 1.78) ? 'center' : 'flex-start', 'important');
+        }
+
+        window.addEventListener('resize', updateJustify);
+        window.addEventListener('orientationchange', updateJustify);
+        window.addEventListener('load', updateJustify);
+        updateJustify();
+    </script>
+</body>
+</html>
